@@ -1,6 +1,6 @@
 {
   "name": "vue-rescroll",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Vue plug-in for instruction management scroll state and rolling location restore",
   "keywords": [
     "vue",
@@ -10,7 +10,7 @@
     "滚动条复原"
   ],
   "private": false,
-  "main": "src/restore-scroller.js",
+  "main": "dist/bundle.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.config.js"
@@ -25,6 +25,7 @@
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "html-webpack-plugin": "^3.2.0",
+    "ts-loader": "^5.1.0",
     "ts-node": "^7.0.1",
     "tsconfig-paths": "^3.5.0",
     "typescript": "^3.0.3",
@@ -33,6 +34,7 @@
     "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
-    "vue": "^2.5.17"
+    "vue": "^2.5.17",
+    "vuex": "^3.0.1"
   }
 }

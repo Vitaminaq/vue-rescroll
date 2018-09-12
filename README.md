@@ -1,4 +1,4 @@
-# vue-scroll 是一款滚动状态管理指令化的插件。
+# vue-rescroll 是一款滚动状态管理指令化的插件。
 
 ## How to use it
 
@@ -22,6 +22,7 @@ class ScrollPosition {
         return Object.assign(this.position, position);
     }
 }
+This is my own layer wrapped on vuex to support ES6 class, if you use the default vuex, write the getter, actions, mutations attributes directly, just as normal.
 // moudule ScrollStore
 class ScrollStore {
     // state

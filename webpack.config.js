@@ -4,7 +4,7 @@ const path = require('path');
 const config = {
 	mode: 'production',
 	entry: {
-		main: './src/restore-scroller.js'
+		main: './src/restore-scroller.ts'
 	},
 	output: {
 		filename: 'bundle.js',
