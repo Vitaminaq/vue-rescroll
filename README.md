@@ -57,7 +57,11 @@ class ScrollStore {
 
 export default ScrollStore;
 ```
-
+main.js
+``` 
+import VueRescroll from 'vue-rescroll'
+Vue.use(VueRescroll);
+```
 如何用在.vue的文件中（'name' 一定要使用一个不冲突的标志。path即你保存滚动条的vuex module名字）；</br>
 How to use it in.Vue files ('name'must use a non conflicting flag. Path is the name of the vuex module that you save the scroll bar.
 ```
