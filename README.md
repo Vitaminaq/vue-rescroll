@@ -9,8 +9,7 @@ npm install vue-rescroll --save
 
 ```
 
-#use
-created a new vuex store modules:</br>
+### use
 这里用了typescript的语法，你可以换成js来写。</br> Here you use the syntax of typescript, and you can write it in JS.
 ```
 interface Position {
@@ -27,7 +26,7 @@ class ScrollPosition {
     }
 }
 ```
-###这是我自己在vuex基础上封装的代码，你可以用正常的vuex写法编写</br>This is my own layer wrapped on vuex to support ES6 class, if you use the default vuex, write the getter, actions, mutations attributes directly, just as normal.
+这是我自己在vuex基础上封装的代码，你可以用正常的vuex写法编写</br>This is my own layer wrapped on vuex to support ES6 class, if you use the default vuex, write the getter, actions, mutations attributes directly, just as normal.
 
 ```
 // module ScrollStore
@@ -59,7 +58,8 @@ class ScrollStore {
 export default ScrollStore;
 ```
 
-###如何用在.vue的文件中（'name' 一定要使用一个不冲突的标志。path即你保存滚动条的vuex module名字）；
+如何用在.vue的文件中（'name' 一定要使用一个不冲突的标志。path即你保存滚动条的vuex module名字）；</br>
+How to use it in.Vue files ('name'must use a non conflicting flag. Path is the name of the vuex module that you save the scroll bar.
 ```
 <div v-rescroll="{name: 'A unique marker', path: 'scrollStore'}"></div>
 ```
