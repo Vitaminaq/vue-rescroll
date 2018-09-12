@@ -4,7 +4,7 @@ const path = require('path');
 const config = {
 	mode: 'production',
 	entry: {
-		main: './src/restore-scroller.ts'
+		main: './src/restore-scroller.js'
 	},
 	output: {
 		filename: 'bundle.js',
@@ -12,6 +12,12 @@ const config = {
 	},
 	module: {
 		rules: [{
+				test: /\.vue$/,
+				loader: 'vue-loader',
+				options: {
+				// vue-loader options go here
+				}
+			},{
 				test: /(\.jsx|\.js)$/,
 				use: { loader: 'babel-loader' }
 			},
