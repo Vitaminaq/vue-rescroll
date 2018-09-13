@@ -67,3 +67,4 @@ How to use it in.Vue files ('name'must use a non conflicting flag. Path is the n
 ```
 <div v-rescroll="{name: 'A unique marker', path: 'scrollStore'}"></div>
 ```
+[详细描述各种现象博客地址](https://blog.csdn.net/theoneEmperor/article/details/82669022)
