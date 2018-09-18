@@ -12,7 +12,7 @@ export interface Options {
 }
 class RestoreScroll extends Vue {
     opt: Options;
-    watchScroll: Function;
+    watchScroll: any;
     app: any;
     store: any;
     timer: any;
@@ -25,7 +25,6 @@ class RestoreScroll extends Vue {
         this.store = options.vnode.context.$store;
         this.openScrollStore();
         this.getPosition();
-        this.watchScroll = () => {};
         this.scrollTo();
     }
     update (): this {
