@@ -1,10 +1,13 @@
-import Vue, { VNode } from 'vue';
+import Vue, { VNode, VueConstructor } from 'vue';
 
 /**
  * re-scroll指令封装，它是一个管理整个项目所有滚动状态的智能化指令，
  * 拥有了它，你可以为所欲为。
  */
 
+/**
+ * 每个滚动条的位置存放类
+ */
 interface Position {
     x: number,
     y: number
@@ -19,22 +22,22 @@ class ScrollPosition {
     }
 }
 
-export interface Options {
+/**
+ * 指令类
+ */
+interface Options {
     dom: HTMLElement,
     name: string,
     rescroll: any
 }
 class RestoreScroll extends Vue {
     opt: Options;
-    watchScroll: any;
-    app: any;
+    watchScroll?: () => void;
     timer: any;
-    scrollTimer: any;
     constructor (options: Options) {
         super();
         this.opt = options;
         this.timer = {};
-        this.scrollTimer= {};
         this.openScrollStore();
         this.getPosition();
         this.scrollTo();
@@ -71,11 +74,10 @@ class RestoreScroll extends Vue {
     }
     scrollTo ():this {
         const { dom, name, rescroll } = this.opt;
-        const a = rescroll[name];
         this.$nextTick(() => {
-            if (a) {
-                dom.scrollLeft = a.position.x;
-                dom.scrollTop = a.position.y;
+            if (rescroll[name]) {
+                dom.scrollLeft = rescroll[name].position.x;
+                dom.scrollTop = rescroll[name].position.y;
             } else {
                 dom.scrollLeft = 0;
                 dom.scrollTop = 0;
@@ -85,17 +87,20 @@ class RestoreScroll extends Vue {
     }
     destroy ():this {
         const { dom } = this.opt;
-        dom.removeEventListener('scroll', this.watchScroll, false);
+        if (this.watchScroll) {
+            dom.removeEventListener('scroll', this.watchScroll, false);
+        }
         return this;
     }
 }
 
-// interface Ele extends
 interface Binding {
-    value: object
+    value: {
+        name: string
+    }
 }
 
-interface MyHTMLElement extends HTMLElement {
+interface DirectiveHTMLElement extends HTMLElement {
     restoreScroll?: any
 }
 
@@ -105,47 +110,62 @@ interface VueRoot extends Vue {
 
 let nowName: string = '';
 const directive = {
-    inserted: function (el: MyHTMLElement, binding: any, vnode: VNode) {
-        if (!vnode.context) return;
+    inserted: function (el: DirectiveHTMLElement, binding: Binding, vnode: VNode) {
+        nowName = binding.value.name;
+        if (!vnode.context) return this;
+        if (!vnode.context.$root) return this;
         const root: VueRoot = vnode.context.$root;
         if (!root.$rescroll) {
             root.$rescroll = {};
         }
+        const options: Options = {
+            dom: el,
+            name: binding.value.name,
+            rescroll: root.$rescroll
+        };
+        if (!el.restoreScroll) {
+            el.restoreScroll = {};
+        }
+        if (!el.restoreScroll[nowName]) {
+            el.restoreScroll[nowName] = new RestoreScroll(options);
+            return this;
+        } else {
+            el.restoreScroll[nowName].update(options);
+            return this;
+        }
+    },
+    componentUpdated: function (el: DirectiveHTMLElement, binding: Binding, vnode: VNode) {
         nowName = binding.value.name;
+        if (!vnode.context) return this;
+        if (!vnode.context.$root) return this;
+        const root: VueRoot = vnode.context.$root;
+        if (!root.$rescroll) {
+            root.$rescroll = {};
+        }
         let options: Options = {
             dom: el,
             name: binding.value.name,
             rescroll: root.$rescroll
         };
-        if (el.restoreScroll) {
-            return el.restoreScroll.update(options);
+        if (!el.restoreScroll) {
+            el.restoreScroll = {};
         }
-        el.restoreScroll = new RestoreScroll(options);
+        if (!el.restoreScroll[nowName]) {
+            el.restoreScroll[nowName] = new RestoreScroll(options);
+            return this;
+        } else {
+            el.restoreScroll[nowName].update(options);
+            return this;
+        }
     },
-    componentUpdated: function (el: MyHTMLElement, binding: any, vnode: VNode) {
-        nowName = binding.value.name;
-        if (!vnode.context) return;
-        const root: VueRoot = vnode.context.$root;
-        if (!root.$rescroll) {
-            root.$rescroll = {};
-        }
-        let options: Options = {
-            dom: el,
-            name: binding.value.name,
-            rescroll: root.$rescroll
-        };
-        if (el.restoreScroll) {
-            return el.restoreScroll.update(options);
-        }
-        el.restoreScroll = new RestoreScroll(options);
-    },
-    unbind (el: MyHTMLElement) {
-        el.restoreScroll.destroy();
+    unbind (el: DirectiveHTMLElement) {
+        el.restoreScroll[nowName].destroy();
         delete el.restoreScroll;
     }
 };
+
 export default {
-    install (Vue: any) {
+    install (Vue: VueConstructor) {
         Vue.directive('rescroll', directive);
     }
 };
