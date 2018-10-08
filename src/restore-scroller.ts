@@ -1,20 +1,33 @@
-import Vue from 'vue';
+import Vue, { VNode } from 'vue';
 
 /**
  * re-scroll指令封装，它是一个管理整个项目所有滚动状态的智能化指令，
  * 拥有了它，你可以为所欲为。
  */
+
+interface Position {
+    x: number,
+    y: number
+}
+class ScrollPosition {
+    position: Position = {
+        x: 0,
+        y: 0
+    }
+    $savePosition (position: Position) {
+        return Object.assign(this.position, position);
+    }
+}
+
 export interface Options {
-    dom: any,
+    dom: HTMLElement,
     name: string,
-    path: string,
-    vnode: any
+    rescroll: any
 }
 class RestoreScroll extends Vue {
     opt: Options;
     watchScroll: any;
     app: any;
-    store: any;
     timer: any;
     scrollTimer: any;
     constructor (options: Options) {
@@ -22,7 +35,6 @@ class RestoreScroll extends Vue {
         this.opt = options;
         this.timer = {};
         this.scrollTimer= {};
-        this.store = options.vnode.context.$store;
         this.openScrollStore();
         this.getPosition();
         this.scrollTo();
@@ -32,23 +44,24 @@ class RestoreScroll extends Vue {
         return this;
     }
     openScrollStore ():this {
-        const { path, name } = this.opt;
-        this.store.commit(`${path}/$openScrollStore`, name);
+        const { rescroll, name } = this.opt;
+        if (!rescroll[name]) {
+            rescroll[name] = new ScrollPosition();
+        }
         return this;
     }
     getPosition ():this {
-        if (this.watchScroll) return this;
-        const { dom, path, name } = this.opt;
+        const { dom, name, rescroll } = this.opt;
         this.watchScroll = () => {
             if (name === nowName) {
-                const key = `timer-${path}-${name}`;
+                const key = `timer-${name}`;
                 clearTimeout(this.timer[key]);
                 this.timer[key] = setTimeout(() => {
                     let position = {
                         x: dom.scrollLeft,
                         y: dom.scrollTop
                     };
-                    this.store.commit(`${path}/$saveScrollStore`, {name, position});
+                    rescroll[name].$savePosition(position);
                     delete this.timer[key];
                 }, 1000/60);
             }
@@ -57,12 +70,12 @@ class RestoreScroll extends Vue {
         return this;
     }
     scrollTo ():this {
-        const { dom, name, path } = this.opt;
-        let a = this.store.getters[`${path}/_scrollStore`];
+        const { dom, name, rescroll } = this.opt;
+        const a = rescroll[name];
         this.$nextTick(() => {
-            if (a[name]) {
-                dom.scrollLeft = a[name].position.x;
-                dom.scrollTop = a[name].position.y;
+            if (a) {
+                dom.scrollLeft = a.position.x;
+                dom.scrollTop = a.position.y;
             } else {
                 dom.scrollLeft = 0;
                 dom.scrollTop = 0;
@@ -77,38 +90,58 @@ class RestoreScroll extends Vue {
     }
 }
 
-let restoreScroll:any = {};
+// interface Ele extends
+interface Binding {
+    value: object
+}
+
+interface MyHTMLElement extends HTMLElement {
+    restoreScroll?: any
+}
+
+interface VueRoot extends Vue {
+    $rescroll?: object
+}
+
 let nowName: string = '';
 const directive = {
-    inserted: function (el: any, binding: any, vnode: any) {
+    inserted: function (el: MyHTMLElement, binding: any, vnode: VNode) {
+        if (!vnode.context) return;
+        const root: VueRoot = vnode.context.$root;
+        if (!root.$rescroll) {
+            root.$rescroll = {};
+        }
         nowName = binding.value.name;
         let options: Options = {
             dom: el,
             name: binding.value.name,
-            path: binding.value.path,
-            vnode: vnode
+            rescroll: root.$rescroll
         };
-        if (restoreScroll[options.name]) {
-            return restoreScroll[options.name].update(options);
+        if (el.restoreScroll) {
+            return el.restoreScroll.update(options);
         }
-        restoreScroll[options.name] = new RestoreScroll(options);
+        el.restoreScroll = new RestoreScroll(options);
     },
-    componentUpdated: function (el: any, binding: any, vnode: any) {
+    componentUpdated: function (el: MyHTMLElement, binding: any, vnode: VNode) {
         nowName = binding.value.name;
+        if (!vnode.context) return;
+        const root: VueRoot = vnode.context.$root;
+        if (!root.$rescroll) {
+            root.$rescroll = {};
+        }
         let options: Options = {
             dom: el,
             name: binding.value.name,
-            path: binding.value.path,
-            vnode: vnode
+            rescroll: root.$rescroll
         };
-        if (restoreScroll[options.name]) {
-            return restoreScroll[options.name].update(options);
+        if (el.restoreScroll) {
+            return el.restoreScroll.update(options);
         }
-        restoreScroll[options.name] = new RestoreScroll(options);
+        el.restoreScroll = new RestoreScroll(options);
     },
-    unbind (el: any, binding: any) {
-        restoreScroll[binding.value.name].destroy();
-        delete restoreScroll[binding.value.name];
+    unbind (el: MyHTMLElement) {
+        el.restoreScroll.destroy();
+        delete el.restoreScroll;
     }
 };
 export default {

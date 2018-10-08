@@ -1,6 +1,10 @@
 {
   "name": "vue-rescroll",
+<<<<<<< HEAD
   "version": "1.0.12",
+=======
+  "version": "1.0.13",
+>>>>>>> 2dec3d73ae79c63ff125bd0c5c25e2856733720c
   "description": "Vue plug-in for instruction management scroll state and rolling location restore",
   "keywords": [
     "vue",
@@ -34,7 +38,6 @@
     "webpack-dev-server": "^3.1.4"
   },
   "dependencies": {
-    "vue": "^2.5.17",
-    "vuex": "^3.0.1"
+    "vue": "^2.5.17"
   }
 }

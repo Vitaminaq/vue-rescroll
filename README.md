@@ -10,6 +10,20 @@ npm install vue-rescroll --save
 ```
 
 ### use
+#### v1.0.13
+为了使插件在所有的vue项目中兼容，所以把状态管理从vuex中抽离，自己定义了一套滚动状态存储的规则，从而也简化了该插件的使用。</br>
+In order to make plug-ins compatible in all Vue projects, state management is removed from vuex, and a set of rules for rolling state storage is defined, thus simplifying the use of the plug-in.</br>
+main.js
+``` 
+import VueRescroll from 'vue-rescroll'
+Vue.use(VueRescroll);
+```
+如何用在.vue的文件中（'name' 一定要使用一个不冲突的标志）；</br>
+How to use it in.Vue files ('name'must use a non conflicting flag. 
+```
+<div v-rescroll="{name: 'A unique marker'}"></div>
+```
+#### V1.0.13以前  V1.0.13 before
 这里用了typescript的语法，你可以换成js来写。</br> Here you use the syntax of typescript, and you can write it in JS.
 ```
 interface Position {
