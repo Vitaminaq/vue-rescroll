@@ -60,7 +60,7 @@ class RestoreScroll extends Vue {
                 const key = `timer-${name}`;
                 clearTimeout(this.timer[key]);
                 this.timer[key] = setTimeout(() => {
-                    let position = {
+                    const position = {
                         x: dom.scrollLeft,
                         y: dom.scrollTop
                     };
@@ -72,16 +72,17 @@ class RestoreScroll extends Vue {
         dom.addEventListener('scroll', this.watchScroll, false);
         return this;
     }
-    scrollTo ():this {
+    scrollTo (): this {
         const { dom, name, rescroll } = this.opt;
+        const { x, y } = rescroll[name].position;
+        if (!rescroll[name] || dom.scrollHeight < y || dom.scrollWidth < x) {
+            dom.scrollLeft = 0;
+            dom.scrollTop = 0;
+            return this;
+        }
         this.$nextTick(() => {
-            if (rescroll[name]) {
-                dom.scrollLeft = rescroll[name].position.x;
-                dom.scrollTop = rescroll[name].position.y;
-            } else {
-                dom.scrollLeft = 0;
-                dom.scrollTop = 0;
-            }
+            dom.scrollLeft = x;
+            dom.scrollTop = y;
         });
         return this;
     }
@@ -105,7 +106,7 @@ interface DirectiveHTMLElement extends HTMLElement {
 }
 
 interface VueRoot extends Vue {
-    $rescroll?: object
+    $rescroll?: any
 }
 
 let nowName: string = '';
@@ -142,7 +143,7 @@ const directive = {
         if (!root.$rescroll) {
             root.$rescroll = {};
         }
-        let options: Options = {
+        const options: Options = {
             dom: el,
             name: binding.value.name,
             rescroll: root.$rescroll
