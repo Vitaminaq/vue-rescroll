@@ -9,7 +9,7 @@ const plugins = [
   buble({  // transpile ES2015+ to ES5
     exclude: ['node_modules/**']
   })
-]
+];
 
 export default [
   {
@@ -30,27 +30,27 @@ export default [
     external: [ 'vue' ],
     plugins
   },
-  // {
-  //   input: 'src/index.ts',
-  //   output: {
-  //     file: 'dist/vue-rescroll.js',
-  //     format: 'umd',
-  //     name: 'VueRescroll'
-  //   },
-  //   external: [ 'vue' ],
-  //   plugins
-  // },
-  // {
-  //   input: 'src/index.ts',
-  //   output: {
-  //     file: 'dist/vue-rescroll-min.js',
-  //     format: 'umd',
-  //     name: 'VueRescroll'
-  //   },
-  //   external: [ 'vue' ],
-  //   plugins: [
-  //     ...plugins,
-  //     uglify()
-  //   ]
-  // },
+  {
+    input: 'src/index.ts',
+    output: {
+      file: 'dist/vue-rescroll.js',
+      format: 'umd',
+      name: 'VueRescroll'
+    },
+    external: [ 'vue' ],
+    plugins
+  },
+  {
+    input: 'src/index.ts',
+    output: {
+      file: 'dist/vue-rescroll-min.js',
+      format: 'umd',
+      name: 'VueRescroll'
+    },
+    external: [ 'vue' ],
+    plugins: [
+      ...plugins,
+      uglify()
+    ]
+  },
 ];

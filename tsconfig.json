@@ -9,13 +9,7 @@
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "noImplicitAny": false,
-        "sourceMap": true,
-        "baseUrl": "./src",
-        "paths": {
-            "@src/*": [
-                "./*"
-            ]
-        },
+        "sourceMap": true
     },
     "include": [
         "src/**/*.ts"
