@@ -5,8 +5,8 @@
 ## How to use it
 
 ### install
-```
-
+```javascript
+// 12
 npm install vue-rescroll --save
 
 ```
