@@ -77,12 +77,12 @@ import VueRescroll from 'vue-rescroll'
 Vue.use(VueRescroll);
 ```
 如何用在.vue的文件中（'name' 一定要使用一个不冲突的标志。path即你保存滚动条的vuex module名字）；</br>
-How to use it in.Vue files ('name'must use a non conflicting flag. Path is the name of the vuex module that you save the scroll bar.
+How to use it in.Vue files ('name'must use a non conflicting flag. Path is the name of the vuex module that you save the scroll bar.)
 ```javascript
 <div v-rescroll="{name: 'A unique marker', path: 'scrollStore'}"></div>
 ```
-页面不要使用keep-alive缓存，那样的话，钩子函数不会触发，如果你的页面没必要每次刷新，第一次加载可以用vuex把数据保存起来，每次进入页面时不请求ajax直接去sotre里面拿，这样页面就没有跳动的状况。如果每次都要刷新，可以在进入页面时加上loading动画把这个跳动的瞬间遮盖掉，或者加上路由动画也能达到同样的效果。</br>
-Don't use keep-alive caching for your pages. In that case, the hook function won't trigger. If your pages don't need to be refreshed every time, you can save the data with vuex for the first load. You don't ask Ajax to go directly to sotre every time you enter the page, so the page won't jump. If you need to refresh each time, you can add a loading animation to the page to mask the jump, or add a routing animation to the page to achieve the same effect. for example：</br>
+页面不要使用keep-alive缓存，那样的话，钩子函数不会触发，如果你的页面没必要每次刷新，第一次加载可以用vuex把数据保存起来，每次进入页面时不请求ajax直接去store里面拿，这样页面就没有跳动的状况。如果每次都要刷新，可以在进入页面时加上loading动画把这个跳动的瞬间遮盖掉，或者加上路由动画也能达到同样的效果。</br>
+Don't use keep-alive caching for your pages. In that case, the hook function won't trigger. If your pages don't need to be refreshed every time, you can save the data with vuex for the first load. You don't ask Ajax to go directly to store every time you enter the page, so the page won't jump. If you need to refresh each time, you can add a loading animation to the page to mask the jump, or add a routing animation to the page to achieve the same effect. for example：</br>
 
 使用vuex缓存数据/use vuex
 ```javascript
