@@ -5,10 +5,8 @@
 ## How to use it
 
 ### install
-```javascript
-// 12
+```bash
 npm install vue-rescroll --save
-
 ```
 
 ### use
