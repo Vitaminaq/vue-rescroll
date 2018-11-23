@@ -8,7 +8,8 @@
 ```bash
 npm install vue-rescroll --save
 ```
-目前只做了局部滚动的，所以请设置滚动区域的高度，后面会添加window全局滚动条。
+目前只做了局部滚动的，所以请设置滚动区域的高度，后面会添加window全局滚动条。  
+At present, only partial scrolling has been done, so please set the height of the scrolling area, and then add the windows global scroll bar.
 ### use
 #### v1.0.13以上 v1.0.13 or above
 为了使插件在所有的vue项目中兼容，所以把状态管理从vuex中抽离，自己定义了一套滚动状态存储的规则，从而也简化了该插件的使用。</br>
