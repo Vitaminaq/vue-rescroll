@@ -165,8 +165,14 @@ const directive = {
     }
 };
 
-export default {
+const plugin = {
     install (Vue: VueConstructor) {
         Vue.directive('rescroll', directive);
     }
-};
+}
+
+export default plugin;
+
+if (typeof window !== 'undefined') {
+    (window as any).Vue.use(plugin);
+}

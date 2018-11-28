@@ -1,6 +1,6 @@
 {
   "name": "vue-rescroll",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "Vue plug-in for instruction management scroll state and rolling location restore",
   "keywords": [
     "vue",

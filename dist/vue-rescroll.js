@@ -156,12 +156,15 @@
             delete el.restoreScroll;
         }
     };
-    var VueRescroll = {
+    var plugin = {
         install: function install(Vue$$1) {
             Vue$$1.directive('rescroll', directive);
         }
     };
+    if (typeof window !== 'undefined') {
+        window.Vue.use(plugin);
+    }
 
-    return VueRescroll;
+    return plugin;
 
 })));
