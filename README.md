@@ -1,6 +1,6 @@
 # vue-rescroll 是一款滚动状态管理指令化的插件。</br>Is a rolling state management instruction plug-in.
 
-![版本号](https://img.shields.io/npm/v/vue-rescroll.svg?label=vue-rescroll)  ![总下载量](https://img.shields.io/npm/dt/vue-rescroll.svg)
+![https://www.npmjs.com/package/vue-rescroll](https://img.shields.io/npm/v/vue-rescroll.svg?label=vue-rescroll)  ![总下载量](https://img.shields.io/npm/dt/vue-rescroll.svg)
 
 ## How to use it
 
