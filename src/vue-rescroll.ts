@@ -160,6 +160,7 @@ const directive = {
         }
     },
     unbind (el: DirectiveHTMLElement) {
+        if (!el.restoreScroll || !el.restoreScroll[nowName]) return;
         el.restoreScroll[nowName].destroy();
         delete el.restoreScroll;
     }
@@ -173,6 +174,15 @@ const plugin = {
 
 export default plugin;
 
-if (typeof window !== 'undefined') {
-    (window as any).Vue.use(plugin);
+if (typeof window !== 'undefined' && !!window.Vue) {
+  window.Vue.use(plugin);
+} 
+
+/**
+ * 在window对象中添加app对象
+ */
+declare global {
+	interface Window {
+		Vue: VueConstructor;
+	}
 }

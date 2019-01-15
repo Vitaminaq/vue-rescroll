@@ -146,6 +146,8 @@ var directive = {
         }
     },
     unbind: function unbind(el) {
+        if (!el.restoreScroll || !el.restoreScroll[nowName])
+            { return; }
         el.restoreScroll[nowName].destroy();
         delete el.restoreScroll;
     }
@@ -155,7 +157,7 @@ var plugin = {
         Vue$$1.directive('rescroll', directive);
     }
 };
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && !!window.Vue) {
     window.Vue.use(plugin);
 }
 
