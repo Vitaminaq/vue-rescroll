@@ -98,8 +98,12 @@ var directive = {
         var options = {
             dom: el,
             name: binding.value.name,
+<<<<<<< HEAD
             rescroll: root.$rescroll,
             vnode: vnode
+=======
+            rescroll: root.$rescroll
+>>>>>>> b948284564518956f3fc9c8ed63ec3606540e9ff
         };
         if (!el.restoreScroll) {
             el.restoreScroll = {};

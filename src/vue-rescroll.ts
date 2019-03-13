@@ -1,5 +1,4 @@
 import Vue, { VNode, VueConstructor } from 'vue';
-import { DirectiveBinding, DirectiveOptions } from 'vue/types/options';
 
 /**
  * re-scroll指令封装，它是一个管理整个项目所有滚动状态的智能化指令，
@@ -26,17 +25,17 @@ class ScrollPosition {
 /**
  * 指令类
  */
-export interface Options {
-    dom: HTMLElement;
-    name: string;
-    rescroll: any;
-    vnode: VNode;
+interface Options {
+    dom: HTMLElement,
+    name: string,
+    rescroll: any
 }
-class RestoreScroll {
+class RestoreScroll extends Vue {
     opt: Options;
     watchScroll?: () => void;
     timer: any;
     constructor (options: Options) {
+        super();
         this.opt = options;
         this.timer = {};
         this.openScrollStore();
@@ -74,15 +73,14 @@ class RestoreScroll {
         return this;
     }
     scrollTo (): this {
-        const { dom, name, rescroll, vnode } = this.opt;
+        const { dom, name, rescroll } = this.opt;
         const { x, y } = rescroll[name].position;
         if (!rescroll[name] || dom.scrollHeight < y || dom.scrollWidth < x) {
             dom.scrollLeft = 0;
             dom.scrollTop = 0;
             return this;
         }
-        if (!vnode.context) return this;
-        vnode.context.$nextTick(() => {
+        this.$nextTick(() => {
             dom.scrollLeft = x;
             dom.scrollTop = y;
         });
@@ -97,6 +95,12 @@ class RestoreScroll {
     }
 }
 
+interface Binding {
+    value: {
+        name: string
+    }
+}
+
 interface DirectiveHTMLElement extends HTMLElement {
     restoreScroll?: any
 }
@@ -106,8 +110,8 @@ interface VueRoot extends Vue {
 }
 
 let nowName: string = '';
-const directive:DirectiveOptions = {
-    inserted: function (el: DirectiveHTMLElement, binding: DirectiveBinding, vnode: VNode) {
+const directive = {
+    inserted: function (el: DirectiveHTMLElement, binding: Binding, vnode: VNode) {
         nowName = binding.value.name;
         if (!vnode.context) return this;
         if (!vnode.context.$root) return this;
@@ -118,8 +122,7 @@ const directive:DirectiveOptions = {
         const options: Options = {
             dom: el,
             name: binding.value.name,
-            rescroll: root.$rescroll,
-            vnode
+            rescroll: root.$rescroll
         };
         if (!el.restoreScroll) {
             el.restoreScroll = {};
@@ -132,7 +135,7 @@ const directive:DirectiveOptions = {
             return this;
         }
     },
-    componentUpdated: function (el: DirectiveHTMLElement, binding: DirectiveBinding, vnode: VNode) {
+    componentUpdated: function (el: DirectiveHTMLElement, binding: Binding, vnode: VNode) {
         nowName = binding.value.name;
         if (!vnode.context) return this;
         if (!vnode.context.$root) return this;
@@ -143,8 +146,7 @@ const directive:DirectiveOptions = {
         const options: Options = {
             dom: el,
             name: binding.value.name,
-            rescroll: root.$rescroll,
-            vnode
+            rescroll: root.$rescroll
         };
         if (!el.restoreScroll) {
             el.restoreScroll = {};
