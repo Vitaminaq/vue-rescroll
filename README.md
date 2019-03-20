@@ -27,10 +27,12 @@ directives: {
 <div v-rescroll="{name: 'A unique marker'}"></div>
 ```
 #### 参数配置/Parameter configuration
-* name(string): 必传，用来保存滚动状态的key值。  
-name: required,the key value used to save the scrolling state.
-* type(string): 滚动类型(局部，全局)。
-type: 
+| key  | require |  value |  type | discribe |  
+| :--: | :-----: | :----: | :---: | -------- |  
+| name | 是 |        | string | 用来保存滚动状态的key值 |
+| type | 否 | 'default'/'window' | string | 滚动类型(局部，全局) |
+| storageMode | 否 | 'default'/'localstorage' | string | 滚动状态保存方式 |
+| domType | 否 | 'default'/'tab' | string | 是否为tab切换组件 |
 ```html
 <img :src="baseUrl" v-img-lazy-load="{url: ''}" />
 ```
