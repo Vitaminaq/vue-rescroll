@@ -31,7 +31,6 @@ interface Options {
 	name: string;
 	type: string;
 	storageMode: string;
-	key: string | number;
 	vnode: VNode;
 	rescroll?: any;
 }
@@ -60,7 +59,7 @@ class RestoreScroll {
 		return this;
 	}
 	getPosition(): this {
-		const { dom, name, rescroll, type, storageMode, key } = this.opt;
+		const { dom, name, rescroll, type, storageMode } = this.opt;
 		let tag;
 		if (type && type === 'window') {
 			tag = window;
@@ -69,9 +68,9 @@ class RestoreScroll {
 		}
 		this.watchScroll = () => {
 			if (name === nowName) {
-				const keys = `timer-${name}`;
-				clearTimeout(this.timer[keys]);
-				this.timer[keys] = setTimeout(() => {
+				const key = `timer-${name}`;
+				clearTimeout(this.timer[key]);
+				this.timer[key] = setTimeout(() => {
 					let position;
 					if (type && type === 'window') {
 						position = {
@@ -86,7 +85,7 @@ class RestoreScroll {
 					}
 					if (storageMode && storageMode === 'localstorage') {
 						localStorage.setItem(
-							`${key}`,
+							`${name}`,
 							JSON.stringify(position)
 						);
 					} else {
@@ -100,10 +99,10 @@ class RestoreScroll {
 		return this;
 	}
 	scrollTo(): this {
-		const { dom, name, rescroll, type, storageMode, key, vnode } = this.opt;
+		const { dom, name, rescroll, type, storageMode, vnode } = this.opt;
 		let position;
 		if (storageMode && storageMode === 'localstorage') {
-			const str = localStorage.getItem(`${key}`);
+			const str = localStorage.getItem(`${name}`);
 			if (!str) return this;
 			position = JSON.parse(str);
 		} else {
@@ -145,7 +144,6 @@ interface Value {
 	name: string;
 	type?: 'window' | 'local';
 	storageMode?: 'localstorage' | 'default';
-	key?: string | number;
 	domType?: 'tab' | 'default';
 }
 interface Binding extends VNodeDirective {
@@ -168,7 +166,7 @@ const fun = (el: DirectiveHTMLElement, binding: Binding, vnode: VNode) => {
 	if (!vnode.context.$root) return;
 	const root: VueRoot = vnode.context.$root;
 	let options: Options;
-	const { name, type = '', storageMode = '', key = '', domType = '' } = binding.value;
+	const { name, type = '', storageMode = '', domType = '' } = binding.value;
 	if (!name) throw Error('please set name');
 	if (binding.value.storageMode === 'localstorage') {
 		options = {
@@ -176,7 +174,6 @@ const fun = (el: DirectiveHTMLElement, binding: Binding, vnode: VNode) => {
 			name,
 			type,
 			storageMode,
-			key,
 			vnode
 		};
 	} else {
@@ -188,7 +185,6 @@ const fun = (el: DirectiveHTMLElement, binding: Binding, vnode: VNode) => {
 			name,
 			type,
 			storageMode,
-			key,
 			vnode,
 			rescroll: root.$rescroll
 		};
