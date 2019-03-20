@@ -1,4 +1,5 @@
-import Vue, { VNode, VueConstructor, VNodeDirective } from 'vue';
+import Vue, { VNode, VueConstructor, VNodeDirective, PluginObject } from 'vue';
+import { DirectiveOptions } from 'vue/types/options';
 
 /**
  * re-scroll指令封装，它是一个管理整个项目所有滚动状态的智能化指令，
@@ -34,23 +35,17 @@ interface Options {
 	vnode: VNode;
 	rescroll?: any;
 }
-class RestoreScroll extends Vue {
+class RestoreScroll {
 	opt: Options;
 	watchScroll?: () => void;
 	vnode: VNode = {} as VNode;
+	timer: any;
 	constructor(options: Options) {
-		super();
 		this.opt = options;
+		this.timer = {};
 		this.openScrollStore();
 		this.getPosition();
 		this.scrollTo();
-	}
-	init(options): this {
-		this.opt = options;
-		const { vnode = null } = options;
-		if (!vnode || !vnode.context) throw Error('it is not vonde');
-		this.vnode = vnode;
-		return this;
 	}
 	update(): this {
 		this.scrollTo();
@@ -66,9 +61,17 @@ class RestoreScroll extends Vue {
 	}
 	getPosition(): this {
 		const { dom, name, rescroll, type, storageMode, key } = this.opt;
+		let tag;
+		if (type && type === 'window') {
+			tag = window;
+		} else {
+			tag = dom;
+		}
 		this.watchScroll = () => {
 			if (name === nowName) {
-				requestAnimationFrame(() => {
+				const keys = `timer-${name}`;
+				clearTimeout(this.timer[keys]);
+				this.timer[keys] = setTimeout(() => {
 					let position;
 					if (type && type === 'window') {
 						position = {
@@ -82,33 +85,36 @@ class RestoreScroll extends Vue {
 						};
 					}
 					if (storageMode && storageMode === 'localstorage') {
-						localStorage.setItem(`${key}`, position);
+						localStorage.setItem(
+							`${key}`,
+							JSON.stringify(position)
+						);
 					} else {
 						rescroll[name].$savePosition(position);
 					}
-				});
+					delete this.timer[key];
+				}, 1000 / 60);
 			}
 		};
-		dom.addEventListener('scroll', this.watchScroll, false);
+		tag.addEventListener('scroll', this.watchScroll, false);
 		return this;
 	}
 	scrollTo(): this {
-		const { dom, name, rescroll, type, storageMode, key } = this.opt;
+		const { dom, name, rescroll, type, storageMode, key, vnode } = this.opt;
 		let position;
 		if (storageMode && storageMode === 'localstorage') {
-			position = localStorage.getItem(`${key}`);
+			const str = localStorage.getItem(`${key}`);
+			if (!str) return this;
+			position = JSON.parse(str);
 		} else {
 			position = rescroll[name].position;
 		}
 		if (!position) return this;
 		const { x = 0, y = 0 } = position;
-		this.vnode.context.$nextTick(() => {
+		if (!vnode.context) return this;
+		vnode.context.$nextTick(() => {
 			if (type && type === 'window') {
-				if (window.scrollX < x || window.scrollY < y) {
-					window.scrollTo(0, 0);
-				} else {
-					window.scrollTo(x, y);
-				}
+				window.scrollTo(x, y);
 			} else {
 				if (
 					!rescroll[name] ||
@@ -118,12 +124,11 @@ class RestoreScroll extends Vue {
 					dom.scrollLeft = 0;
 					dom.scrollTop = 0;
 					return this;
+				} else {
+					dom.scrollLeft = x;
+					dom.scrollTop = y;
 				}
 			}
-			this.$nextTick(() => {
-				dom.scrollLeft = x;
-				dom.scrollTop = y;
-			});
 		});
 		return this;
 	}
@@ -138,12 +143,13 @@ class RestoreScroll extends Vue {
 
 interface Value {
 	name: string;
-	type: string;
-	storageMode: string;
-	key: string | number;
+	type?: 'window' | 'local';
+	storageMode?: 'localstorage' | 'default';
+	key?: string | number;
+	domType?: 'tab' | 'default';
 }
 interface Binding extends VNodeDirective {
-	value: Value;
+	value?: Value;
 }
 
 interface DirectiveHTMLElement extends HTMLElement {
@@ -156,14 +162,15 @@ interface VueRoot extends Vue {
 
 let nowName: string = '';
 const fun = (el: DirectiveHTMLElement, binding: Binding, vnode: VNode) => {
+	if (!binding.value) throw Error('please set required parameters');
 	nowName = binding.value.name;
-	if (!vnode.context) return;
+	if (!vnode.context) throw Error('it is not a vnode');
 	if (!vnode.context.$root) return;
 	const root: VueRoot = vnode.context.$root;
 	let options: Options;
-	const { name, type = '', storageMode = '', key = '' } = binding.value;
+	const { name, type = '', storageMode = '', key = '', domType = '' } = binding.value;
 	if (!name) throw Error('please set name');
-	if (binding.value.type === 'localstorage') {
+	if (binding.value.storageMode === 'localstorage') {
 		options = {
 			dom: el,
 			name,
@@ -193,11 +200,13 @@ const fun = (el: DirectiveHTMLElement, binding: Binding, vnode: VNode) => {
 		el.restoreScroll[nowName] = new RestoreScroll(options);
 		return;
 	} else {
-		el.restoreScroll[nowName].update(options);
+		if (domType && domType === 'tab') {
+			el.restoreScroll[nowName].update(options);
+		}
 		return;
 	}
 };
-const directive: any = {
+export const directive: DirectiveOptions = {
 	inserted: function(
 		el: DirectiveHTMLElement,
 		binding: Binding,
@@ -219,7 +228,7 @@ const directive: any = {
 	}
 };
 
-const plugin = {
+const plugin: PluginObject<any> = {
 	install(Vue: VueConstructor) {
 		Vue.directive('rescroll', directive);
 	}

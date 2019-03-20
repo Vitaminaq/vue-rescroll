@@ -1,13 +1,19 @@
 import buble from 'rollup-plugin-buble';
 import RollupPluginTypescript from 'rollup-plugin-typescript2';
-import uglify from 'rollup-plugin-uglify-es';
+import { terser } from "rollup-plugin-terser";
+import clear from 'rollup-plugin-clear';
 
 const plugins = [
   RollupPluginTypescript({
-    tsconfig: "tsconfig.json"
+    tsconfig: "tsconfig.json",
+    clean: true
   }),
+  terser(),
   buble({  // transpile ES2015+ to ES5
     exclude: ['node_modules/**']
+  }),
+  clear({
+    targets: [ './dist' ]
   })
 ];
 
@@ -16,9 +22,10 @@ export default [
     input: 'src/index.ts',
     output: {
       file: 'dist/vue-rescroll-common.js',
-      format: 'cjs'
+      format: 'cjs',
+      exports: 'named',
+      name: 'VueRescroll'
     },
-    external: [ 'vue' ],
     plugins
   },
   {
@@ -27,17 +34,6 @@ export default [
       file: 'dist/vue-rescroll-esm.js',
       format: 'es'
     },
-    external: [ 'vue' ],
-    plugins
-  },
-  {
-    input: 'src/index.ts',
-    output: {
-      file: 'dist/vue-rescroll.js',
-      format: 'umd',
-      name: 'VueRescroll'
-    },
-    external: [ 'vue' ],
     plugins
   },
   {
@@ -45,12 +41,9 @@ export default [
     output: {
       file: 'dist/vue-rescroll-min.js',
       format: 'umd',
+      exports: 'named',
       name: 'VueRescroll'
     },
-    external: [ 'vue' ],
-    plugins: [
-      ...plugins,
-      uglify()
-    ]
-  },
+    plugins
+  }
 ];
