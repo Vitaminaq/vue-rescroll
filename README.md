@@ -34,7 +34,13 @@ directives: {
 | storageMode | 否 | 'default'/'localstorage' | string | 滚动状态保存方式 |
 | domType | 否 | 'default'/'tab' | string | 是否为tab切换组件 |
 ```html
-<img :src="baseUrl" v-img-lazy-load="{url: ''}" />
+<div
+    v-rescroll="{
+        name: `${id}-scroll`,
+        type: 'window',
+        storageMode: 'localstorage'
+    }"
+     ></div>
 ```
 ### tips
 页面不要使用keep-alive缓存，那样的话，钩子函数不会触发。</br>
